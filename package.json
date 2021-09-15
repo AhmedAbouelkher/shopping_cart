@@ -1,0 +1,33 @@
+{
+    "name": "shopping_cart",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "clean": "rm -rf node_modules/",
+        "start": "node app.js",
+        "dev": "nodemon --exec \"node -r dotenv/config\" app.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "admin-lte": "^3.1.0",
+        "connect-mongo": "^4.5.0",
+        "ejs": "^3.1.6",
+        "express": "^4.17.1",
+        "express-ejs-layouts": "^2.5.1",
+        "express-session": "^1.17.2",
+        "http-errors": "^1.8.0",
+        "jsonwebtoken": "^8.5.1",
+        "mongoose": "^6.0.5",
+        "mongoose-paginate-v2": "^1.4.2",
+        "multer": "^1.4.3",
+        "passport": "^0.4.1",
+        "passport-local": "^1.0.0"
+    },
+    "devDependencies": {
+        "dotenv": "^10.0.0",
+        "nodemon": "^2.0.12"
+    }
+}
