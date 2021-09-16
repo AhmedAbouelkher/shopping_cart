@@ -1,3 +1,4 @@
+const createHttpError = require('http-errors');
 const multer = require('multer');
 const p = require('path');
 
@@ -18,10 +19,20 @@ const fileFilter = (req, file, cb) => {
     }
 }
 
-module.exports = multer({
-    storage,
-    limits: {
-        fileSize: 1024 * 1024 * 6
-    },
-    fileFilter,
-})
+const handleError = (err, req, res, next) => {
+    if (err.message === 'Unexpected field') {
+        return next(createHttpError(400, "Provided file field name is invalid"))
+    }
+    next()
+}
+
+module.exports = {
+    uploadImage: multer({
+        storage,
+        limits: {
+            fileSize: 1024 * 1024 * 6
+        },
+        fileFilter,
+    }),
+    handleError
+}

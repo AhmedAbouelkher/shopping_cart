@@ -1,15 +1,20 @@
 const createHttpError = require('http-errors');
 const passport = require('passport');
+const tokens = require('csrf')()
+
+
 const authRouter = require('express').Router()
 const logoutRouter = require('express').Router()
 
 const { createUser, loginUser, ADMIN_ROLE } = require('../../models/user')
-const imageUpload = require('../../middleware/upload_image');
+const { uploadImage } = require('../../middleware/upload_image');
 
-authRouter.get('/', (req, res, _) => {
-    if (req.isUnauthenticated()) return res.render('login', { layout: 'layouts/auth.ejs' });
+authRouter.get('/', async(req, res, _) => {
+    //TODO: insert form token
+    if (req.isUnauthenticated()) return res.render('login', { layout: 'layouts/auth.ejs', form_token: "token" });
     return res.redirect('/dashboard')
 })
+
 
 //TODO: show proper errors in login page
 //----- Login -----//
@@ -26,7 +31,7 @@ const _isAlowed = (req, _, next) => {
 }
 
 // Create new admin
-authRouter.post('/new', imageUpload.single('image'), _isAlowed, async(req, res, next) => {
+authRouter.post('/new', uploadImage.single('image'), _isAlowed, async(req, res, next) => {
     const body = req.body
     const payload = {
         name: body.name,
@@ -61,6 +66,7 @@ authRouter.post('/check', async(req, res, next) => {
 //----- Logout -----//
 logoutRouter.post('/', (req, res, next) => {
     req.logOut()
+    req.token = undefined
     res.redirect('/')
 })
 

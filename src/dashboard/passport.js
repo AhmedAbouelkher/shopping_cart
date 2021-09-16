@@ -23,7 +23,15 @@ async function setupPassort(passport) {
     ))
 }
 
-module.exports = setupPassort
+const checkAuth = function(req, res, next) {
+    if (req.user && req.user.role === ADMIN_ROLE) return next();
+    return res.redirect('/login')
+}
+
+module.exports = {
+    setupPassort,
+    isAuthanticated: checkAuth,
+}
 
 // function setupPassort(passport) {
 //     passport.use('admin_login', new LocalStrategy({ usernameField: 'email', passReqToCallback: true },

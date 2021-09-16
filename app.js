@@ -16,10 +16,7 @@ app.set('views', p.join(__dirname, 'views'))
 app.set('layout', 'layouts/layout')
 
 app.use(express.static(p.join(__dirname, "public")))
-app.use(
-    "/adminlte",
-    express.static(p.join(__dirname, "/node_modules/admin-lte/"))
-);
+app.use("/adminlte", express.static(p.join(__dirname, "node_modules", "admin-lte")));
 
 // app.use('/files', express.static('files'))
 
@@ -50,7 +47,7 @@ app.use(session({
  */
 
 // Need to require the entire Passport config module so app.js knows about it
-require('./src/dashboard/passport')(passport);
+require('./src/dashboard/passport').setupPassort(passport);
 require('./src/db/passport')(passport);
 
 app.use(flash());
@@ -61,17 +58,10 @@ app.use(passport.session());
 app.get('/', (req, res) => res.redirect('/dashboard'))
 
 //---- Normal api -----
-const indexRouter = require('./src/routes/index')
-app.use('/api', indexRouter)
+require('./src/routes/set_up')(app)
 
 //----- Dashboard api -----
-const indexRouterDB = require('./src/dashboard/routes/index')
-const { loginRouter, logoutRouter } = require('./src/dashboard/routes/auth');
-
-app.use('/dashboard', indexRouterDB)
-app.use('/login', loginRouter)
-app.use('/logout', logoutRouter)
-
+require('./src/dashboard/set_up_routes')(app)
 
 //----- Error handling -----
 app.all('*', (_, __, next) => {
@@ -79,8 +69,11 @@ app.all('*', (_, __, next) => {
 })
 
 app.use((err, req, res, next) => {
-    const statusCode = err.status || 500
-    res.status(statusCode).json({ error: err.message, code: statusCode });
+    const httpError = err.http || err
+    const statusCode = httpError.status || 500
+    const message = httpError.message
+    const errors = err.errors
+    res.status(statusCode).json({ message, errors, code: statusCode });
 });
 
 

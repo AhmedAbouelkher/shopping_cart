@@ -19,31 +19,38 @@ const schema = mongoose.Schema({
 
 const Product = mongoose.model('Product', schema)
 
-module.exports = Product
-
-exports.products = async() => {
+const fetchProducts = async() => {
     const products = await Product.find({});
     return products;
 }
 
-exports.createProduct = async payload => {
+const createProduct = async payload => {
     //TODO: validate create
     const product = await Product.create(payload)
     return product
 }
 
-exports.findProductById = async id => {
+const findProductById = async id => {
     const product = await Product.findById(id)
     return product
 }
 
-exports.updateProductById = async(id, payload) => {
+const updateProductById = async(id, payload) => {
     //TODO: validate update
     const product = await Product.findByIdAndUpdate(id, payload, { new: true })
     return product
 }
 
-exports.deleteProduct = async id => {
+const deleteProduct = async id => {
     const product = await Product.findByIdAndDelete(id)
     return product
+}
+
+module.exports = {
+    Product,
+    fetchProducts,
+    createProduct,
+    findProductById,
+    updateProductById,
+    deleteProduct
 }
