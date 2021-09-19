@@ -1,71 +1,163 @@
 <!-- Content Header (Page header) -->
 <%- include('../partials/content/content_header.ejs', { title: "Add New Product" }) %>
-    <!-- /.content-header -->
+<!-- /.content-header -->
 
-    <!-- Main content -->
-    <section class="content">
-        <div class="container-fluid">
+<!-- dropzonejs -->
+<link rel="stylesheet" href="/public/plugins/dropzone/min/dropzone.min.css">
 
-            <form action="/dashboard/products/create" enctype="multipart/form-data" method="POST">
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
 
-                <div class="card">
-                    <div class="card-body">
+    <form id="product_form" action="/dashboard/products/create" enctype="multipart/form-data" method="POST">
 
-                        <div class="form-group">
-                            <label for="inputName">Name</label>
-                            <input type="text" id="inputName" class="form-control" name="name">
-                        </div>
+      <div class="card">
+        <div class="card-body">
 
-                        <div class="form-group">
-                            <label for="inputEstimatedBudget">Price</label>
-                            <input type="number" id="inputEstimatedBudget" class="form-control" name="price">
-                        </div>
+          <div class="form-group">
+            <label for="inputName">Name</label>
+            <input type="text" id="inputName" class="form-control" name="name">
+          </div>
+
+          <div class="form-group">
+            <label for="inputEstimatedBudget">Price</label>
+            <input type="number" id="inputEstimatedBudget" class="form-control" name="price">
+          </div>
+
+          <!-- <div class="form-group" id="form-image">
+            <label for="image-dropzone">Image</label>
+            <div class="dropzone" id="image-dropzone"></div>
+          </div> -->
 
 
-                        <div class="form-group" id="image_upload_group">
-                            <label for="inputEstimatedBudget">Image</label>
-                            <div class="input-group mb-3">
-                                <div class="custom-file">
-                                    <input type="file" class="custom-file-input" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01" accept=".jpg, .jpeg, .png">
-                                    <label class="custom-file-label" for="inputGroupFile01" id="upload_label">Choose file</label>
-                                </div>
-                            </div>
-
-                        </div>
-
-                    </div>
-                </div>
-
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <input type="submit" value="Create" class="btn btn-primary float-right">
-                        <a onclick="window.history.back();" class="btn btn-secondary">Cancel</a>
-                    </div>
-                </div>
-
-            </form>
-
+          <div class="form-group" id="image_upload_group">
+            <label for="inputEstimatedBudget">Image</label>
+            <div class="input-group mb-3">
+              <div class="custom-file">
+                <input type="file" class="custom-file-input" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01" name="image" accept=".jpg, .jpeg, .png">
+                <label class="custom-file-label" for="inputGroupFile01" id="upload_label">Choose file</label>
+              </div>
+            </div>
+          </div>
 
         </div>
-        <!--/. container-fluid -->
-    </section>
-    <!-- /.content -->
+      </div>
 
-    <script>
-        //* Display a preview if the picked image
-        const uploadGroup = document.getElementById('image_upload_group')
-        const imageInputElement = document.getElementById('inputGroupFile01')
+      <div class="row mt-4">
+        <div class="col-12">
+          <input type="submit" value="Create" class="btn btn-primary float-right">
+          <a onclick="window.history.back();" class="btn btn-secondary">Cancel</a>
+        </div>
+      </div>
 
-        imageInputElement.addEventListener('change', function() {
-            const file = imageInputElement.files[0]
-            const fileName = file.name
-            event.preventDefault();
-            document.getElementById('upload_label').innerHTML = fileName
+    </form>
 
-            const img = document.createElement('img')
-            img.src = URL.createObjectURL(file)
-            img.setAttribute('width', '10%')
 
-            uploadGroup.appendChild(img)
-        })
-    </script>
+  </div>
+  <!--/. container-fluid -->
+</section>
+<!-- /.content -->
+
+
+<script src="/public/plugins/dropzone/min/dropzone.min.js"></script>
+
+<script>
+  const pageForm = $('#form-image')
+  pageForm.ready(function() {
+    pageForm.append('<input type="hidden" name="image" class="custom-file-input" style="display: false;">')
+  })
+
+  Dropzone.options.imageDropzone = {
+    url: "http://localhost:5000/dashboard/products/upload",
+    maxFilesize: 2000, // MB
+    acceptedFiles: '.jpeg,.jpg,.png,.gif',
+    maxFiles: 1,
+    addRemoveLinks: true,
+    headers: {
+      'X-CSRF-TOKEN': "CftGtGd0lZiWJ79H1fpF7A3m06KxH1zHJkSACOgl"
+    },
+    params: {
+      size: 2000,
+      width: 4096,
+      height: 4096
+    },
+    success: function(file, response) {
+      pageForm.find('input[name="image"]').remove()
+      pageForm.append('<input type="hidden" name="image" value="' + response.name + '">')
+    },
+    removedfile: function(file) {
+      console.log(file)
+      file.previewElement.remove()
+      if (file.status !== 'error') {
+        pageForm.find('input[name="image"]').remove()
+        this.options.maxFiles = this.options.maxFiles + 1
+      }
+    },
+    error: function(file, response) {
+      if ($.type(response) === 'string') {
+        var message = response //dropzone sends it's own error messages in string
+      } else {
+        var message = response.errors.file
+      }
+      file.previewElement.classList.add('dz-error')
+      _ref = file.previewElement.querySelectorAll('[data-dz-errormessage]')
+      _results = []
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        node = _ref[_i]
+        _results.push(node.textContent = message)
+      }
+
+      return _results
+    }
+  }
+</script>
+
+<!-- form validation -->
+
+<script type="text/javascript" src="/public/js/show_image_preview.js"></script>
+<script src="/public/plugins/jquery-validation/jquery.validate.min.js"></script>
+
+<script>
+  //https://jqueryvalidation.org/documentation/
+  $(function() {
+    $('#product_form').validate({
+      rules: {
+        name: {
+          required: true,
+          minlength: 4
+        },
+        price: {
+          required: true,
+          number: true,
+          min: 10
+        },
+        image: {
+          required: true
+        },
+      },
+      messages: {
+        name: {
+          required: "Please enter a product name"
+        },
+        image: {
+          required: "Product image is required"
+        }
+      },
+      errorElement: 'p',
+      ignore: "",
+      errorPlacement: function(error, element) {
+        error.addClass('invalid-feedback');
+        element.closest('.form-group').append(error);
+      },
+      highlight: function(element, errorClass, validClass) {
+        $(element).addClass('is-invalid');
+      },
+      unhighlight: function(element, errorClass, validClass) {
+        $(element).removeClass('is-invalid');
+      },
+      submitHandler: function(form) {
+        form.submit();
+      }
+    });
+  });
+</script>

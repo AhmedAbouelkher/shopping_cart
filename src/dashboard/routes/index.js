@@ -1,11 +1,11 @@
-const createHttpError = require('http-errors');
 const passport = require('passport');
+const { isAuth } = require('../middleware/auth');
+
 const router = require('express').Router()
 
+router.use(isAuth)
+
 router.get('/', (req, res, next) => {
-    if (req.isUnauthenticated()) {
-        return res.redirect('/login')
-    }
     return res.render('index')
 })
 

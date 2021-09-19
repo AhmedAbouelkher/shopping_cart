@@ -1,0 +1,28 @@
+<ul class="pagination pagination-sm m-0 float-right">
+  <% const prevClass = data.prevPage == null ? 'disabled' : '' %>
+  <li class="page-item <%= prevClass %>">
+    <a class="page-link" href="<%= data.prevPage %>">&laquo;</a>
+  </li>
+
+  <% for (let i = 0; i < data.totalPages; i++) {%>
+  <% const page = i + 1 %>
+  <% const isCurrentPage = page === data.currentPage ? 'disabled' : 'active' %>
+  <li class="page-item <%= isCurrentPage %>">
+    <a class="page-link" href="<%= page %>"> <%= page%> </a>
+  </li>
+  <% } %>
+  <% const nextClass = data.nextPage == null ? 'disabled' : '' %>
+  <li id="cl" class="page-item <%= nextClass %>">
+    <a class="page-link" href="<%= data.nextPage %>">&raquo;</a>
+  </li>
+</ul>
+
+<script>
+  const pageUrl = url
+  $('.page-link').each(function() {
+    const oldHref = $(this).attr('href')
+    pageUrl.searchParams.append('page', oldHref)
+    $(this).attr('href', pageUrl.pathname + pageUrl.search)
+    console.log(newHref)
+  })
+</script>

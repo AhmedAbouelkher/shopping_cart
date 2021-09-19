@@ -6,12 +6,7 @@ const { isAuthanticated } = require('../middleware/auth')
 
 router.post('/register', uploadImage.single('image'), async(req, res, next) => {
     const body = req.body
-    const payload = {
-        name: body.name,
-        email: body.email,
-        image: req.file != null ? req.file.path : '',
-        password: body.password,
-    }
+    if (req.file !== undefined) { body.image = req.file.path; }
     try {
         const response = await createUser(payload)
         return res.send(response)
@@ -58,17 +53,12 @@ router.get('/me', isAuthanticated, (req, res, next) => {
 
 router.put('/me', isAuthanticated, uploadImage.single('image'), async(req, res, next) => {
     const body = req.body
-    const payload = {
-        name: body.name,
-        email: body.email,
-        image: req.file != null ? req.file.path : undefined,
-    }
-    console.log(payload);
+    if (req.file !== undefined) { body.image = req.file.path; }
     try {
-        const updatedUser = await updateUser(req.user, payload)
+        const updatedUser = await updateUser(req.user, body)
         return res.send({ user: updatedUser })
     } catch (error) {
-        return next(error)
+        next(error)
     }
 }, handleError)
 

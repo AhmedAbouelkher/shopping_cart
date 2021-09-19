@@ -1,11 +1,19 @@
-const indexRouter = require('./index')
-const productsRouter = require('./products')
-const authRouter = require('./auth')
+const indexRouter = require("./index");
+const productsRouter = require("./products");
+const cartRouter = require("./cart");
 
-const setUp = app => {
-    indexRouter.use('/auth', authRouter)
-        // indexRouter.use('/products', productsRouter)
-    app.use('/api', indexRouter)
-}
+const authRouter = require("./auth");
+const createHttpError = require("http-errors");
 
-module.exports = setUp
+const setUp = (app) => {
+  indexRouter.use("/auth", authRouter);
+  indexRouter.use("/products", productsRouter);
+  indexRouter.use("/cart", cartRouter);
+  
+  indexRouter.all("*", (_, __, next) => {
+    return next(createHttpError(404, "This route does not exist"));
+  });
+  app.use("/api", indexRouter);
+};
+
+module.exports = setUp;

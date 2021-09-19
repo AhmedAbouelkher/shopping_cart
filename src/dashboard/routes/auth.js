@@ -10,11 +10,10 @@ const { createUser, loginUser, ADMIN_ROLE } = require('../../models/user')
 const { uploadImage } = require('../../middleware/upload_image');
 
 authRouter.get('/', async(req, res, _) => {
-    //TODO: insert form token
+    //TODO: insert form token (for security)
     if (req.isUnauthenticated()) return res.render('login', { layout: 'layouts/auth.ejs', form_token: "token" });
     return res.redirect('/dashboard')
 })
-
 
 //TODO: show proper errors in login page
 //----- Login -----//

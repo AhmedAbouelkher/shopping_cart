@@ -23,7 +23,7 @@ const handleError = (err, req, res, next) => {
     if (err.message === 'Unexpected field') {
         return next(createHttpError(400, "Provided file field name is invalid"))
     }
-    next()
+    next(err)
 }
 
 module.exports = {

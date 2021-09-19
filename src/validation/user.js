@@ -11,13 +11,11 @@ const registerSchema = new Joi.object({
     email: Joi.string().email().required(),
     image: Joi.string().required(),
     password: Joi.string().min(4).max(32).required(),
-})
+}).options({ abortEarly: false })
 
 const validateUserRegister = async function(payload) {
     try {
-        await registerSchema.validateAsync(payload, {
-            abortEarly: false,
-        });
+        await registerSchema.validateAsync(payload);
         return undefined
     } catch (error) {
         return _serializeErrors(error)
@@ -50,7 +48,7 @@ const UpdateSchema = new Joi.object({
     name: Joi.string(),
     email: Joi.string().email(),
     image: Joi.string(),
-}).or('image', 'email', 'name')
+}).min(1)
 
 const validateUserUpdate = async function(payload) {
     try {

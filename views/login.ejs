@@ -1,35 +1,35 @@
 <div class="container-fluid" style="width: 50%; ">
 
-    <!-- <img class="mb-4" src="/docs/4.6/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72"> -->
-    <h1 class="h3 mb-3 font-weight-normal text-center">Login</h1>
+  <!-- <img class="mb-4" src="/docs/4.6/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72"> -->
+  <h1 class="h3 mb-3 font-weight-normal text-center">Login</h1>
 
-    <!-- display alerts here -->
+  <!-- display alerts here -->
 
-    <% if(typeof alerts != 'undefined') { %>
-        <% alerts.forEach(function(error) { %>
-            <div class="alert alert-warning alert-dismissible fade show text-white " role="alert">
-                <%= error %>
-                    <button type="button" class="close text-white" data-dismiss="alert" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <% }) %>
-                <% } %>
+  <% if(typeof alerts != 'undefined') { %>
+  <% alerts.forEach(function(error) { %>
+  <div class="alert alert-warning alert-dismissible fade show text-white " role="alert">
+    <%= error %>
+    <button type="button" class="close text-white" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <% }) %>
+  <% } %>
 
-                    <% if (messages.error) { %>
-                        <%= messages.error %>
-                            <% } %>
-                                <!-- end of alerts -->
+  <% if (messages.error) { %>
+  <%= messages.error %>
+  <% } %>
+  <!-- end of alerts -->
 
-                                <form class="form-signin text-center" action="/login" method="POST">
-                                    <label for="inputEmail" class="sr-only">Email address</label>
-                                    <input name="email" type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
-                                    <label for="inputPassword" class="sr-only">Password</label>
-                                    <input name="password" type="password" id="inputPassword" class="form-control" placeholder="Password" required>
-                                    <div class="checkbox mb-3">
-                                        <label> <input type="checkbox" value="remember-me"> Remember me </label>
-                                    </div>
-                                    <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
-                                    <input type="hidden" name="_token" value="<%= form_token %> ">
-                                </form>
+  <form class="form-signin text-center" action="/login" method="POST">
+    <label for="inputEmail" class="sr-only">Email address</label>
+    <input name="email" type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+    <label for="inputPassword" class="sr-only">Password</label>
+    <input name="password" type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+    <div class="checkbox mb-3">
+      <label> <input type="checkbox" value="remember-me"> Remember me </label>
+    </div>
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
+    <input type="hidden" name="_token" value="<%= form_token %> ">
+  </form>
 </div>
