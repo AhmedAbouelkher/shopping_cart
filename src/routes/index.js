@@ -1,9 +1,7 @@
-const router = require('express').Router()
+const router = require("express").Router()
 
-
-router.get('/', (req, res, next) => {
-    res.send({ msg: "Welcome to `Shopping Cart API`" })
+router.get("/", (req, res, next) => {
+    res.send({ message: "Welcome to Shopping Cart API" })
 })
-
 
 module.exports = router

@@ -1,0 +1,72 @@
+<!-- Content Header (Page header) -->
+<%- include('../partials/content/content_header.ejs', { title:" Orders" }) %>
+<!-- /.content-header -->
+
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
+
+    <div class="card">
+      <div class="card-body">
+
+        <!-- TODO: query can be paginated -->
+        <!-- TODO: can search with client name or order id -->
+        <form action="/dashboard/products" method="GET">
+          <div class="input-group">
+            <input id="search" name="q" value="<%= query || '' %>" type="search" class="form-control form-control-md" placeholder="Type product name...">
+            <div class="input-group-append">
+              <button type="submit" class="btn btn-info"><i class="fa fa-search"></i></button>
+            </div>
+          </div>
+        </form>
+
+        <div class="dropdown-divider" style="margin: 1rem 0;"></div>
+
+        <div class="card-body p-0">
+
+          <!-- TODO: fix the columns flex spaces -->
+          <table class="table table-striped table-bordered" id="orders_table">
+            <thead class="thead-dark">
+              <tr>
+
+                <th>#</th>
+                <th>No. items</th>
+                <th>Total Price</th>
+                <th>Ordered At</th>
+                <th>Options</th>
+
+              </tr>
+            </thead>
+            <tbody>
+              <% for (let i= 0; i <orders.length; i++) { %>
+              <% const order= orders[i]; %>
+              <% const createdAt= order.createdAt; %>
+              <tr>
+                <th> <%= order._id.toString().slice(-4) %> </th>
+                <td> <%= order.items.length %> </td>
+                <td> <%= order.total %> </td>
+                <td><%= moment(createdAt).format( 'MMM-DD-YYYY') %></td>
+
+                <td class="project-actions text-center">
+                  <a href="orders/<%= order._id  %>/delete" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Delete</a>
+                  <a href="orders/<%= order._id  %>/edit" class="btn btn-info btn-sm"><i class="fas fa-edit"></i> Edit</a>
+                  <a href="orders/<%= order._id  %>" class="btn btn-success btn-sm"><i class="fas fa-eye"></i> View</a>
+                </td>
+
+              </tr>
+              <% } %>
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+
+      <div class="card-footer clearfix">
+        <%- include('../partials/paginator.ejs', { data, url }); %>
+      </div>
+    </div>
+
+  </div>
+  <!--/. container-fluid -->
+</section>
+<!-- /.content -->

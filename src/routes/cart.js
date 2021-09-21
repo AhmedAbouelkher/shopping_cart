@@ -1,16 +1,17 @@
-const createHttpError = require('http-errors')
-const { isAuthanticated } = require('../middleware/auth')
+const { isAuthanticated } = require("../middleware/auth")
 const {
     fetchUserCartByUserId,
     addProductToCartByUserId,
-    checkIfProductInCart,
-} = require('../models/cart')
-const router = require('express').Router()
+    removeProductFromCartByUserId,
+    updateProductQuantityInCartByUserId,
+    deleteUserCart
+} = require("../models/cart")
+const router = require("express").Router()
 
 router.use(isAuthanticated)
 
 //Fetch user cart
-router.get('/', async (req, res, next) => {
+router.get("/", async (req, res, next) => {
     try {
         const cart = await fetchUserCartByUserId(req.user._id)
         res.send({ cart })
@@ -19,25 +20,46 @@ router.get('/', async (req, res, next) => {
     }
 })
 
-router.post('/add', async (req, res, next) => {
+router.post("/item", async (req, res, next) => {
     try {
-        const { product_id: productId, quantity } = req.body
-        const cart = await addProductToCartByUserId(req.user._id, {
+        const { productId, quantity } = req.body
+        await addProductToCartByUserId(req.user._id, {
             productId,
-            quantity,
+            quantity
         })
-        res.send({ cart })
+        res.send({ message: "product_added" })
     } catch (error) {
         next(error)
     }
 })
 
-router.get('/has_product', async (req, res, next) => {
+router.put("/item", async (req, res, next) => {
     try {
-        const { id: productId } = req.query
-        console.log(productId)
-        const result = await fetchProductInCart(req.user._id, productId)
-        res.send({ result })
+        const { productId, removedQuantity } = req.body
+        await updateProductQuantityInCartByUserId(req.user._id, {
+            productId: productId,
+            removedQuantity
+        })
+        res.send({ message: "product_updated" })
+    } catch (error) {
+        next(error)
+    }
+})
+
+router.delete("/item", async (req, res, next) => {
+    try {
+        const { productId } = req.body
+        await removeProductFromCartByUserId(req.user._id, productId)
+        res.send({ message: "product_removed" })
+    } catch (error) {
+        next(error)
+    }
+})
+
+router.delete("/", async (req, res, next) => {
+    try {
+        await deleteUserCart(req.user._id)
+        res.send({ message: "user_cart_deleted" })
     } catch (error) {
         next(error)
     }
