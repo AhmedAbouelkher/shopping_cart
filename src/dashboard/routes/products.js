@@ -6,7 +6,8 @@ const {
     fetchProducts,
     findProductById,
     createProduct,
-    updateProductById
+    updateProductById,
+    deleteProductById
 } = require("../../models/product")
 
 const { isAuth } = require("../middleware/auth")
@@ -23,10 +24,6 @@ router.get("/", async (req, res, next) => {
     const query = req.body.q || req.query.q
     try {
         const productsResponse = await fetchProducts(page, query)
-        //https://stackoverflow.com/questions/18931452/node-js-get-path-from-the-request
-        //https://stackoverflow.com/questions/12525928/how-to-get-request-path-with-express-req-object
-        const url = new URL(req.originalUrl, `http://${req.headers.host}`)
-
         res.render("products/index", {
             products: productsResponse.docs,
             data: {
@@ -35,8 +32,10 @@ router.get("/", async (req, res, next) => {
                 prevPage: productsResponse.prevPage,
                 nextPage: productsResponse.nextPage
             },
-            // baseUrl: req.originalUrl,
-            url,
+            url: JSON.stringify({
+                origin: req.originalUrl,
+                host: `http://${req.headers.host}`
+            }),
             query
         })
     } catch (error) {
@@ -114,21 +113,32 @@ router.post("/upload", (req, res, next) => {
     })
     form.parse(req, async function (err, fields, files) {
         console.log(files.file.path)
-        res.send({ msg: "success" })
+        return res.send({ msg: "success" })
     })
 })
 
 // delete product
+router.post("/:id/delete", async (req, res, next) => {
+    try {
+        const { id } = req.params
+        await deleteProductById(id)
+        return res.redirect("/dashboard/products")
+    } catch (error) {
+        return next(createViewError(error))
+    }
+})
 
 // view product
 router.get("/:id", async (req, res, next) => {
     try {
         const id = req.params.id
         const product = await findProductById(id)
-        res.send(product)
+        return res.send(product)
     } catch (error) {
-        next(convertToViewError(error))
+        return next(convertToViewError(error))
     }
 })
 
 module.exports = router
+
+// /<%- include('../views/partials/side_bar.ejs'); %>

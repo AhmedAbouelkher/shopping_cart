@@ -1,6 +1,7 @@
 const createHttpError = require("http-errors")
 const mongoose = require("mongoose")
 const _ = require("lodash")
+const mongoose_delete = require("mongoose-delete")
 
 //https://www.npmjs.com/package/mongoose-paginate-v2
 const mongoosePaginate = require("mongoose-paginate-v2")
@@ -49,6 +50,8 @@ const orderSchema = new mongoose.Schema(
     },
     { timestamps: true }
 )
+
+orderSchema.plugin(mongoose_delete, { indexFields: true })
 
 orderSchema.plugin(mongoosePaginate)
 
@@ -142,11 +145,18 @@ const changeOrderStatus = async ({ userId, orderId, orderStatus }) => {
             delivery_status: new_status
         }
     )
-    return _getOrderStatusKeyFromValue(new_status)
+    return decodeStatusCode(new_status)
 }
 
-const _getOrderStatusKeyFromValue = (status) => {
-    return Object.keys(ORDER_STATUS).find((k) => ORDER_STATUS[k] === status)
+const decodeStatusCode = (statusValue) => {
+    return Object.keys(ORDER_STATUS).find(
+        (k) => ORDER_STATUS[k] === statusValue
+    )
+}
+
+const encodeStatusCode = (statusKey) => {
+    console.log(statusKey)
+    return ORDER_STATUS[`${statusKey}`]
 }
 
 const _isClientAlowedToChangeStatus = (status) => {
@@ -159,5 +169,7 @@ module.exports = {
     createNewOrder,
     fetchUserOrders,
     fetchUserOrderById,
-    changeOrderStatus
+    changeOrderStatus,
+    decodeStatusCode,
+    encodeStatusCode
 }

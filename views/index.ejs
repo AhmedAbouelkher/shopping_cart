@@ -1,14 +1,57 @@
 <!-- Content Header (Page header) -->
-<%- include('./partials/content/content_header.ejs', { title: "Home" }) %>
-    <!-- /.content-header -->
+<%- include('./partials/content/content_header.ejs', { title: "Dashboard" }) %>
+<!-- /.content-header -->
 
-    <!-- Main content -->
-    <section class="content">
-        <div class="container-fluid">
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
 
-            <h1>Hello world</h1>
-
+    <div class="row">
+      <div class="col-lg-3 col-6">
+        <!-- small box -->
+        <div class="small-box bg-warning">
+          <div class="inner">
+            <h3><%=numOfActiveOrders %> </h3>
+            <p>Active Orders</p>
+          </div>
+          <div class="icon">
+            <i class="ion ion-bag"></i>
+          </div>
+          <a href="dashboard/orders" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
         </div>
-        <!--/. container-fluid -->
-    </section>
-    <!-- /.content -->
+      </div>
+      <!-- ./col -->
+      <div class="col-lg-3 col-6">
+        <!-- small box -->
+        <div class="small-box bg-success">
+          <div class="inner">
+            <h3><%= numOfNewlyDeliveredOrders %> </h3>
+
+            <p>Delivered products</p>
+          </div>
+          <div class="icon">
+            <i class="ion ion-stats-bars"></i>
+          </div>
+          <a href="/dashboard/orders?delivered=true" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+      </div>
+      <!-- ./col -->
+      <div class="col-lg-3 col-6">
+        <!-- small box -->
+        <div class="small-box bg-info">
+          <div class="inner">
+            <h3><%= numOfNewlyAddedProducts %> </h3>
+            <p>Newly added products</p>
+          </div>
+          <div class="icon">
+            <i class="ion ion-stats-bars"></i>
+          </div>
+          <a href="/dashboard/products" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!--/. container-fluid -->
+</section>
+<!-- /.content -->

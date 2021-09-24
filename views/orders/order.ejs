@@ -1,0 +1,135 @@
+<!-- Content Header (Page header) -->
+<% const orderTitle = 'Order ' + order._id.toString() %>
+<%- include('../partials/content/content_header.ejs', { title: orderTitle }) %>
+
+<!-- /.content-header -->
+
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
+    <div class="card">
+
+      <div class="row" style="padding: 0px 1rem; padding-top: 1rem;">
+        <div class="col">
+          <h3> <strong>Details</strong> </h3>
+        </div>
+        <div class="col align-self-center">
+          <% if(order.deleted) { %>
+          <div class="container">
+            <form action="<%= order._id%>/recover" method="post">
+              <button type="submit" class="btn btn-success btn-md"><i class="fas fa-redo"></i> Recover</button>
+            </form>
+          </div>
+          <% } else {%>
+          <div class="dropdown" style=" text-align: end; ">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Actions
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+
+              <a class="dropdown-item" href="<%= order._id%>/update_status"><i class="fas fa-edit"></i> Update Status</a>
+
+              <form action="<%= order._id%>/delete" method="post">
+                <button type="submit" class="dropdown-item" style="color: #dc3545;"><i class="fas fa-trash"></i> Delete</button>
+              </form>
+
+            </div>
+          </div>
+          <% }%>
+
+        </div>
+
+      </div>
+
+      <div class="card-body">
+        <h3 class="card-title"> <strong>Total Value</strong> </h3>
+        <p class="card-text"><%= order.total %> </p>
+
+        <h3 class="card-title"> <strong>Delivery Status</strong> </h3>
+        <p class="card-text"><%= currentStatus %> </p>
+
+        <div class="row">
+
+          <div class="col">
+            <h3 class="card-title"> <strong>Created at</strong> </h3>
+            <p class="card-text"><%= moment(order.createdAt).format( 'MMM-DD-YYYY hh:mm') %> </p>
+          </div>
+          <div class="col">
+            <h3 class="card-title"> <strong>Updated at</strong> </h3>
+            <p class="card-text"><%= moment(order.updatedAt).format( 'MMM-DD-YYYY hh:mm') %> </p>
+          </div>
+
+        </div>
+
+
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 class="m-2">Client</h3>
+      <% const client = order.client; %>
+      <div class="card-body">
+
+        <div class="row">
+
+          <div class="col-6">
+            <h3 class="card-title"> <strong>Name</strong> </h3>
+            <p class="card-text"><%= client.name %> </p>
+            <h3 class="card-title"> <strong>E-mail</strong> </h3>
+            <p class="card-text"><%= client.email %> </p>
+          </div>
+
+          <div class="col align-self-center">
+            <a href="#" class="btn btn-info btn-sm"> <i class="fas fa-user-check"></i> View <%= client.name %>'s profile </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 class="m-2">Products</h3>
+      <div class="card-body ">
+        <!-- TODO: fix the columns flex spaces -->
+        <table class="table table-striped table-bordered">
+          <thead class="thead-dark">
+            <tr>
+
+              <th scope="col" style="width: 1%">#</th>
+              <th scope="col" style="width: 20%">Name</th>
+              <th scope="col" style="width: 8%">Price/item</th>
+              <th scope="col" style="width: 10%">Total Price</th>
+              <th scope="col" style="width: 10%">Quantity</th>
+              <th scope="col" style="width: 8%">Image</th>
+
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let i= 0; i <order.items?.length ?? 0; i++) { %>
+            <% const item= order.items[i]; %>
+            <% const product= item.productId %>
+
+            <tr>
+              <th> <%= product._id.toString().slice(-4) %> </th>
+              <td> <%= product.name %> </td>
+              <td> <%= item.price %> </td>
+              <td> <%= item.total %> </td>
+              <td> <%= item.quantity %> </td>
+
+              <!-- TODO: show image preview from image path -->
+              <td> <img src="/<%= product.image %> " alt="<%= product.name %>" width="120" class="img-thumbnail"> </td>
+
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+
+
+      </div>
+
+    </div>
+
+  </div>
+  <!--/. container-fluid -->
+</section>
+<!-- /.content -->

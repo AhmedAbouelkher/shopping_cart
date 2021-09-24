@@ -4,6 +4,8 @@ const {
     validateUpdateProduct
 } = require("../validation/product")
 
+const { Order } = require("./order")
+
 //https://www.npmjs.com/package/mongoose-paginate-v2
 const mongoosePaginate = require("mongoose-paginate-v2")
 const { createError } = require("../utilities/error_handling")
@@ -32,6 +34,11 @@ const schema = new mongoose.Schema(
 )
 
 schema.plugin(mongoosePaginate)
+
+schema.pre("deleteOne", { document: false, query: true }, async function () {
+    const doc = await this.model.findOne(this.getFilter())
+    await Order.updateMany({ "items.item.productId": doc._id })
+})
 
 const Product = mongoose.model("Product", schema)
 

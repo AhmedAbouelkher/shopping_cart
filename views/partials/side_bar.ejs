@@ -11,24 +11,17 @@
     <!-- Sidebar Menu -->
     <nav class="pt-2">
       <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-        <!-- Add icons to the links using the .nav-icon class
-                   with font-awesome or any other icon font library -->
+        <!-- Add icons to the links using the .nav-icon class with font-awesome or any other icon font library -->
         <li class="nav-item">
-          <a href="/dashboard/products" class="nav-link ">
+          <a href="/dashboard/products" class="nav-link" id="prodcuts-link">
             <i class="nav-icon fas fa-shopping-bag"></i>
-            <p>
-              Products
-              <i class="fas fa-angle-right right"></i>
-            </p>
+            <p> Products <i class="fas fa-angle-right right"></i> </p>
           </a>
         </li>
         <li class="nav-item">
-          <a href="/dashboard/orders" class="nav-link ">
+          <a href="/dashboard/orders" class="nav-link" id="orders-link">
             <i class="nav-icon fas fa-store"></i>
-            <p>
-              Orders
-              <i class="fas fa-angle-right right"></i>
-            </p>
+            <p> Orders <i class="fas fa-angle-right right"></i> </p>
           </a>
         </li>
 
@@ -38,6 +31,23 @@
   </div>
   <!-- /.sidebar -->
 </aside>
+
+<% if(typeof screen_code !== 'undefined') { %>
+<script>
+  $('.sidebar').ready(function() {
+    const code = "<%= screen_code %>"
+    if (code.length === 0) return;
+    if (code.includes('product')) {
+      $('#prodcuts-link').addClass('active')
+    } else if (code.includes('order')) {
+      $('#orders-link').addClass('active')
+    }
+    console.log(code)
+  })
+</script>
+<%}%>
+
+
 
 <!-- <li class="nav-header">EXAMPLES</li>
 <li class="nav-item">

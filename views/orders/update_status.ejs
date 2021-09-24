@@ -1,0 +1,107 @@
+<!-- Content Header (Page header) -->
+<%- include('../partials/content/content_header.ejs', { title:"Update Order Status" }) %>
+<!-- /.content-header -->
+
+<!-- Main content -->
+<section class="content">
+  <div class="container-fluid">
+
+    <form id="order_status_update" action="update_status" method="POST">
+
+      <div class="card">
+        <div class="card-body">
+
+          <h3 class="card-title"> <strong>Current Status</strong> </h3>
+          <p class="card-text"><%= currentStatus %> </p>
+          <div class="form-group">
+            <label for="inputStatus">Status</label>
+            <select name="new_status" id="inputStatus" class="form-control custom-select">
+              <option selected="" disabled="true">Select one</option>
+              <% const statuss = Object.keys(allOrderStatus) %>
+              <% for(let i = 0; i < statuss.length; i++) {%>
+              <% const status = statuss[i]; const statusValue = allOrderStatus[`${status}`] %>
+              <option><%= status  %></option>
+              <%}%>
+            </select>
+          </div>
+        
+      </div>
+    </div>
+
+    <div class="row mt-4">
+      <div class="col-12">
+        <button type="button" class="btn btn-success float-right update-btn"> Update </button>
+        <a onclick="window.history.back();" class="btn btn-secondary">Cancel</a>
+      </div>
+    </div>
+    
+      </form>
+  </div>
+  <!--/. container-fluid -->
+</section>
+<!-- /.content -->
+
+<!-- Update status confirmation model -->
+
+  <div class="modal fade" id="modal-default">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Update Status</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Do you want to change the order status to  <span id="new_s"> dummy  </span> ?</p>
+        </div>
+        <div class="modal-footer justify-content-between">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" id="confirm_update">Update</button>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
+
+<!-- SweetAlert2 -->
+<script src="/public/plugins/sweetalert2/sweetalert2.min.js"></script>
+<!-- Toastr -->
+<script src="/public/plugins/toastr/toastr.min.js"></script>
+
+<script>
+  
+  $('.update-btn').ready(function() {
+    $('.update-btn').prop("disabled",true);
+  })
+
+  $('#inputStatus').on('change', function() {
+    $('.update-btn').prop("disabled",false);
+  })
+
+  $('.update-btn').click(function(e){
+
+    $('#modal-default').modal('show');
+
+    const value = getNewStatusValue()
+    let innerHTML = ''
+    if(value) {
+      innerHTML = `<strong>${value}</strong>`;
+    }
+    
+    $('#new_s').html(innerHTML)
+  })
+
+  function getNewStatusValue() {
+    return $('#inputStatus').val()
+  }
+
+  $('#confirm_update').click(function() {
+    $('#modal-default').modal('hide');
+    $('#order_status_update').submit();
+  })
+
+
+</script>

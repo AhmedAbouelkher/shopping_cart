@@ -1,28 +1,28 @@
-const express = require('express')
-const p = require('path')
-const createHttpError = require('http-errors')
-const expressLayouts = require('express-ejs-layouts')
-const session = require('express-session')
-const passport = require('passport')
+const express = require("express")
+const p = require("path")
+const createHttpError = require("http-errors")
+const expressLayouts = require("express-ejs-layouts")
+const session = require("express-session")
+const passport = require("passport")
 // Package documentation - https://www.npmjs.com/package/connect-mongo
-const MongoStore = require('connect-mongo')
-const flash = require('express-flash')
+const MongoStore = require("connect-mongo")
+const flash = require("express-flash")
 
-const connection = require('./src/db/mongoose')()
+const connection = require("./src/db/mongoose")()
 const app = express()
 
-app.set('view engine', 'ejs')
-app.set('views', p.join(__dirname, 'views'))
-app.set('layout', 'layouts/layout')
-app.set('layout extractScripts', true)
-app.set('layout extractStyles', true)
+app.set("view engine", "ejs")
+app.set("views", p.join(__dirname, "views"))
+app.set("layout", "layouts/layout")
+app.set("layout extractScripts", true)
+app.set("layout extractStyles", true)
 
-app.use('/public', express.static(p.join(__dirname, 'public')))
+app.use("/public", express.static(p.join(__dirname, "public")))
 app.use(
-    '/adminlte',
-    express.static(p.join(__dirname, 'node_modules', 'admin-lte'))
+    "/adminlte",
+    express.static(p.join(__dirname, "node_modules", "admin-lte"))
 )
-app.use('/files', express.static('files'))
+app.use("/files", express.static("files"))
 
 // app.use('/files', express.static('files'))
 
@@ -54,7 +54,7 @@ app.use(
  */
 
 // Need to require the entire Passport config module so app.js knows about it
-require('./src/dashboard/passport').setupPassort(passport)
+require("./src/dashboard/passport").setupPassort(passport)
 // require("./src/db/passport")(passport);
 
 app.use(flash())
@@ -62,17 +62,17 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 //----- GENERAL ----
-app.get('/', (req, res) => res.redirect('/dashboard'))
+app.get("/", (req, res) => res.redirect("/dashboard"))
 
 //---- Normal api -----
-require('./src/routes/set_up')(app)
+require("./src/routes/set_up")(app)
 
 //----- Dashboard api -----
-require('./src/dashboard/set_up_routes')(app)
+require("./src/dashboard/set_up_routes")(app)
 
 //----- Error handling -----
-app.all('*', (_, __, next) => {
-    return next(createHttpError(404, 'This route does not exist'))
+app.all("*", (_, __, next) => {
+    return next(createHttpError(404, "This route does not exist"))
 })
 
 app.use((err, req, res, next) => {
@@ -80,11 +80,10 @@ app.use((err, req, res, next) => {
     const statusCode = httpError.status || 500
     const message = httpError.message
     const errors = err.errors
-    if (!err.view) {
+    if (!err.view)
         return res.status(statusCode).json({ message, errors, statusCode })
-    }
-    if (statusCode === 404) return res.render('partials/404', { message })
-    return res.render('partials/500', { message })
+    if (statusCode === 404) return res.render("partials/404", { message })
+    return res.render("partials/500", { message })
 })
 
 app.listen(process.env.PORT, () => {

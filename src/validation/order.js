@@ -56,7 +56,9 @@ const fetchOrdersQuerySchema = new Joi.object({
     order_by: Joi.number()
         .integer()
         .valid(...[-1, 1])
-        .default(-1)
+        .default(-1),
+    deleted: Joi.boolean().default(false),
+    delivered: Joi.boolean().default(false)
 }).options({ abortEarly: false })
 
 const validateFetchOrdersQuery = async function (payload) {

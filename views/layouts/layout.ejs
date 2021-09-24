@@ -23,7 +23,11 @@
 <body class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
   <div class="wrapper">
 
+    <%  if(typeof side_bar !== 'undefined'){%>
+    <%- side_bar %>
+    <% } else {%>
     <%- include('../partials/side_bar.ejs'); %>
+    <% }%>
 
     <%- include('../partials/nav_bar.ejs'); %>
 

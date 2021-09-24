@@ -17,12 +17,10 @@
   </li>
 </ul>
 
+<script src="/public/js/parse_and_set_hrefs.js">
+</script>
+
 <script>
-  const pageUrl = url
-  $('.page-link').each(function() {
-    const oldHref = $(this).attr('href')
-    pageUrl.searchParams.append('page', oldHref)
-    $(this).attr('href', pageUrl.pathname + pageUrl.search)
-    console.log(newHref)
-  })
+  const qURL = JSON.parse('<%-url%>')
+  parseUrl(qURL)
 </script>
