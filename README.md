@@ -34,7 +34,8 @@ Those are example functions in the app.
 
 ## How to run
 
-1- Clone the repo. (run: `git clone`).
+1- Clone the repo. (run: `git clone https://github.com/AhmedAbouelkher/shopping_cart.git`).
+
 2- Create `.env` and enter those variables.
 
 -   `PORT`
