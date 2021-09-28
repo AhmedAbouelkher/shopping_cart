@@ -155,7 +155,6 @@ const decodeStatusCode = (statusValue) => {
 }
 
 const encodeStatusCode = (statusKey) => {
-    console.log(statusKey)
     return ORDER_STATUS[`${statusKey}`]
 }
 

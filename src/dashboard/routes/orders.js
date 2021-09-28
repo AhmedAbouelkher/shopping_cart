@@ -18,18 +18,19 @@ const {
     getAvailableAllOrderStatus,
     upadateOrderStatus
 } = require("../models/order_extension")
+const { setCSRF, checkCSRF } = require("../middleware/csruf")
 
 router.use(isAuth)
 
 // ## Orders
 
-router.get("/", async (req, res, next) => {
+router.get("/", setCSRF, async (req, res, next) => {
     try {
         const { deleted, delivered } = req.query
 
         const orderssResponse = await fetchOrders({
-            deleted: deleted === "true",
-            delivered: delivered === "true"
+            deleted,
+            delivered
         })
 
         const options = {
@@ -41,8 +42,12 @@ router.get("/", async (req, res, next) => {
                 prevPage: orderssResponse.prevPage,
                 nextPage: orderssResponse.nextPage
             },
-            url: null,
-            query: null
+            url: JSON.stringify({
+                origin: req.originalUrl,
+                host: `http://${req.headers.host}`
+            }),
+            query: null,
+            csrfToken: req.csrfToken()
         }
 
         if (deleted) {
@@ -59,7 +64,7 @@ router.get("/", async (req, res, next) => {
 
 // ## Order
 
-router.get("/:id", async (req, res, next) => {
+router.get("/:id", setCSRF, async (req, res, next) => {
     try {
         const { id } = req.params
         const order = await fetchOrderById(id)
@@ -67,7 +72,8 @@ router.get("/:id", async (req, res, next) => {
         return res.render("orders/order", {
             order,
             currentStatus: decodeStatusCode(order.delivery_status),
-            moment
+            moment,
+            csrfToken: req.csrfToken()
         })
     } catch (error) {
         console.log(error)
@@ -75,7 +81,7 @@ router.get("/:id", async (req, res, next) => {
     }
 })
 
-router.post("/:id/delete", async (req, res, next) => {
+router.post("/:id/delete", checkCSRF, async (req, res, next) => {
     try {
         const { id } = req.params
         await deleteOrderById(id)
@@ -86,7 +92,7 @@ router.post("/:id/delete", async (req, res, next) => {
     }
 })
 
-router.post("/:id/recover", async (req, res, next) => {
+router.post("/:id/recover", checkCSRF, async (req, res, next) => {
     try {
         const { id } = req.params
         await recoverOrderById(id)
@@ -97,7 +103,7 @@ router.post("/:id/recover", async (req, res, next) => {
     }
 })
 
-router.get("/:id/update_status", async (req, res, next) => {
+router.get("/:id/update_status", setCSRF, async (req, res, next) => {
     try {
         const { id } = req.params
         const order = await fetchOrderStatusById(id)
@@ -105,7 +111,8 @@ router.get("/:id/update_status", async (req, res, next) => {
             order,
             currentStatus: decodeStatusCode(order.delivery_status),
             allOrderStatus: getAvailableAllOrderStatus(),
-            moment
+            moment,
+            csrfToken: req.csrfToken()
         })
     } catch (error) {
         console.log(error)
@@ -113,11 +120,10 @@ router.get("/:id/update_status", async (req, res, next) => {
     }
 })
 
-router.post("/:id/update_status", async (req, res, next) => {
+router.post("/:id/update_status", checkCSRF, async (req, res, next) => {
     try {
         const { id } = req.params
         const { new_status } = req.body
-        console.log(new_status)
         await upadateOrderStatus({
             orderId: id,
             new_status

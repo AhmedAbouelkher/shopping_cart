@@ -1,3 +1,5 @@
+const cookieParser = require("cookie-parser")
+
 const indexRouterDB = require("./routes/index")
 const { loginRouter, logoutRouter } = require("./routes/auth")
 const productsRouter = require("./routes/products")
@@ -16,6 +18,7 @@ const _useDBRouters = (app) => {
 }
 
 const setUp = (app) => {
+    app.use(cookieParser())
     _useDBRouters(app)
     app.use("/login", loginRouter)
     app.use("/logout", logoutRouter)

@@ -74,6 +74,7 @@
                   </div>
 
                   <form action="orders/<%=order._id%>/recover" method="post">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                     <button type="submit" class="btn btn-danger btn-sm mb-1"><i class="fas fa-redo"></i> Recover</button>
                   </form>
 
@@ -98,7 +99,7 @@
           <% } %>
 
           <div class="card-footer clearfix">
-            <%- include('../partials/paginator.ejs', { data }); %>
+            <%- include('../partials/paginator.ejs', { data, url }); %>
           </div>
 
         </div>
@@ -113,6 +114,7 @@
 <!-- /.content -->
 
 <form id="delete-order-form" action="" method="POST">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
   <div class="modal fade" id="modal-delete-default">
     <div class="modal-dialog">
       <div class="modal-content">

@@ -1,37 +1,45 @@
 const createHttpError = require("http-errors")
 const passport = require("passport")
-const tokens = require("csrf")()
 
 const authRouter = require("express").Router()
 const logoutRouter = require("express").Router()
 
 const { createUser, loginUser, ADMIN_ROLE } = require("../../models/user")
 const { uploadImage } = require("../../middleware/upload_image")
+const { setCSRF, checkCSRF } = require("../middleware/csruf")
 
-authRouter.get("/", async (req, res, _) => {
+authRouter.get("/", setCSRF, async (req, res, _) => {
     //TODO: insert form token (for security)
     if (req.isUnauthenticated())
-        return res.render("login", { layout: false, form_token: "token" })
+        return res.render("login", {
+            layout: false,
+            csrfToken: req.csrfToken()
+        })
     // if (req.isUnauthenticated()) return res.render('login', { layout: 'layouts/auth.ejs', form_token: "token" });
     return res.redirect("/dashboard")
 })
 
-//TODO: show proper errors in login page
 //----- Login -----//
 authRouter.post(
     "/",
-    // passport.authenticate("admin_login", {
-    //     successRedirect: "/",
-    //     failureRedirect: "/login",
-    //     failureFlash: true
-    // })
+    setCSRF,
+    checkCSRF,
     (req, res, next) => {
         passport.authenticate("admin_login", (err, user, info) => {
-            req.login(user, function (err) {
+            if (err) return next(err)
+            if (!user) return next(createHttpError(404, "User does not exist"))
+            return req.login(user, (err) => {
                 if (err) return next(err)
-                return res.redirect("/users/" + req.user.username)
+                return res.redirect("/")
             })
         })(req, res, next)
+    },
+    (err, req, res, next) => {
+        return res.render("login", {
+            layout: false,
+            alerts: err.errors || [err.message],
+            csrfToken: req.csrfToken()
+        })
     }
 )
 

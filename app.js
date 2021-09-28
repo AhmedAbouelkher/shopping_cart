@@ -24,8 +24,6 @@ app.use(
 )
 app.use("/files", express.static("files"))
 
-// app.use('/files', express.static('files'))
-
 app.use(expressLayouts)
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))

@@ -9,8 +9,8 @@
 <section class="content">
   <div class="container-fluid">
 
-    <form id="product_form" action="/dashboard/products/create" enctype="multipart/form-data" method="POST">
-
+    <form id="product_form" action="create" method="POST">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
       <div class="card">
         <div class="card-body">
 
@@ -86,7 +86,6 @@
       pageForm.append('<input type="hidden" name="image" value="' + response.name + '">')
     },
     removedfile: function(file) {
-      console.log(file)
       file.previewElement.remove()
       if (file.status !== 'error') {
         pageForm.find('input[name="image"]').remove()

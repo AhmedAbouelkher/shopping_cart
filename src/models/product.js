@@ -35,9 +35,11 @@ const schema = new mongoose.Schema(
 
 schema.plugin(mongoosePaginate)
 
-schema.pre("deleteOne", { document: false, query: true }, async function () {
-    const doc = await this.model.findOne(this.getFilter())
-    await Order.updateMany({ "items.item.productId": doc._id })
+schema.post("deleteOne", { document: false, query: true }, async function () {
+    await Order.updateMany(
+        { "items.productId": this._id },
+        { $pull: { items: { productId: this._id } } }
+    ).exec()
 })
 
 const Product = mongoose.model("Product", schema)

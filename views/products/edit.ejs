@@ -6,8 +6,8 @@
 <section class="content">
   <div class="container-fluid">
 
-    <form id="product_form" action="/dashboard/products/<%= product._id.toString() %>/edit" enctype="multipart/form-data" method="POST">
-
+    <form id="product_form" action="/dashboard/products/<%= product._id %>/edit" method="POST">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
       <div class="card">
         <div class="card-body">
 

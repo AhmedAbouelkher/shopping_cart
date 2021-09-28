@@ -16,10 +16,13 @@ const {
     createViewError
 } = require("../../utilities/error_handling")
 
+const { setCSRF, checkCSRF } = require("../middleware/csruf")
+const { parseFormAndCheckCSRF } = require("../middleware/parse_form")
+
 router.use(isAuth)
 
 //Fetch all products
-router.get("/", async (req, res, next) => {
+router.get("/", setCSRF, async (req, res, next) => {
     const page = req.query.page
     const query = req.body.q || req.query.q
     try {
@@ -36,7 +39,8 @@ router.get("/", async (req, res, next) => {
                 origin: req.originalUrl,
                 host: `http://${req.headers.host}`
             }),
-            query
+            query,
+            csrfToken: req.csrfToken()
         })
     } catch (error) {
         console.log(error)
@@ -45,65 +49,46 @@ router.get("/", async (req, res, next) => {
 })
 
 // Create new product
-router.get("/create", (req, res, next) => {
-    res.render("products/create")
+router.get("/create", setCSRF, (req, res, next) => {
+    res.render("products/create", { csrfToken: req.csrfToken() })
 })
 
-router.post("/create", (req, res, next) => {
-    const form = new IncomingForm({
-        keepExtensions: true,
-        uploadDir: "./files/"
-    })
-    form.parse(req, async function (err, fields, files) {
-        if (err) return next(err)
-        try {
-            console.log(files, "+++", fields)
-            const { path, name, type } = files.image
-            const payload = fields
-            payload.image = path
-            await createProduct(payload)
-            return res.redirect("/dashboard/products")
-        } catch (error) {
-            console.log(error)
-            next(convertToViewError(error))
-        }
-    })
+router.post("/create", parseFormAndCheckCSRF, async (req, res, next) => {
+    const { path } = req.files.image
+    const payload = req.body
+    payload.image = path
+    try {
+        await createProduct(payload)
+        return res.redirect("/dashboard/products")
+    } catch (error) {
+        console.log(error)
+        next(convertToViewError(error))
+    }
 })
 
 // View
-router.get("/:id/edit", async (req, res, next) => {
+router.get("/:id/edit", setCSRF, async (req, res, next) => {
     const { id } = req.params
     try {
         const product = await findProductById(id)
-        res.render("products/edit", { product })
+        res.render("products/edit", { product, csrfToken: req.csrfToken() })
     } catch (error) {
         next(convertToViewError(error))
     }
 })
 
 // update product
-router.post("/:id/edit", isAuth, (req, res, next) => {
-    const id = req.params.id
-    const form = new IncomingForm({
-        keepExtensions: true,
-        uploadDir: "./files/"
-    })
-
-    form.parse(req, async function (err, fields, files) {
-        if (err) return next(err)
-        try {
-            const payload = fields
-            const { path, size } = files.image
-            if (size > 0) {
-                payload.image = path
-            }
-            console.log(payload)
-            await updateProductById(id, payload)
-            return res.redirect("/dashboard/products")
-        } catch (error) {
-            next(convertToViewError(error))
-        }
-    })
+router.post("/:id/edit", parseFormAndCheckCSRF, async (req, res, next) => {
+    const { id } = req.params
+    const payload = req.body
+    const { path, size } = req.files.image
+    if (size > 0) payload.image = path
+    try {
+        await updateProductById(id, payload)
+        return res.redirect("/dashboard/products")
+    } catch (error) {
+        next(convertToViewError(error))
+    }
 })
 
 router.post("/upload", (req, res, next) => {
@@ -118,7 +103,8 @@ router.post("/upload", (req, res, next) => {
 })
 
 // delete product
-router.post("/:id/delete", async (req, res, next) => {
+router.post("/:id/delete", checkCSRF, async (req, res, next) => {
+    console.log(req.body)
     try {
         const { id } = req.params
         await deleteProductById(id)
@@ -131,7 +117,7 @@ router.post("/:id/delete", async (req, res, next) => {
 // view product
 router.get("/:id", async (req, res, next) => {
     try {
-        const id = req.params.id
+        const { id } = req.params
         const product = await findProductById(id)
         return res.send(product)
     } catch (error) {
@@ -140,5 +126,3 @@ router.get("/:id", async (req, res, next) => {
 })
 
 module.exports = router
-
-// /<%- include('../views/partials/side_bar.ejs'); %>

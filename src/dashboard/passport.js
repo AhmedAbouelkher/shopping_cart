@@ -14,28 +14,26 @@ async function setupPassort(passport) {
                         email,
                         password
                     )
-                    if (error) {
-                        console.log(error)
-                        return done(error)
-                    }
+                    if (error) return done(error)
                     const userRole = user.role
                     if (userRole !== ADMIN_ROLE) {
-                        return done(null, false, {
-                            message:
-                                "You are not an admin and can't access this information"
-                        })
+                        return done(
+                            createHttpError(422, "you are not an admin")
+                        )
                     }
                     const data = { user, token }
                     return done(null, data)
                 } catch (error) {
-                    console.log("Passport error", error)
-                    return done(error, null, { message: error.messsage })
+                    return done(error, null)
                 }
             }
         )
     )
 
     passport.serializeUser(function (data, done) {
+        if (!data.user) {
+            return done(createHttpError(404, "User is not found"))
+        }
         done(null, data.user.id)
     })
 

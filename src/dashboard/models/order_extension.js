@@ -29,12 +29,11 @@ const fetchOrders = async (options = {}) => {
     const { page, show, order_by, delivered } = value
     const offset = calculatePaginationOffset(1)
 
-    const filter = {
-        deleted: false,
-        delivery_status: delivered ? 1 : { $lt: 1 }
-    }
+    const filter = { deleted: false }
+
+    if (delivered) filter.delivery_status = 1
     if (show !== -2) filter.delivery_status = show
-    if (options.deleted) filter.deleted = options.deleted
+    if (options.deleted) filter.deleted = true
     const orders = await Order.paginate(filter, {
         sort: { createdAt: -1 },
         offset: offset,
